@@ -133,17 +133,17 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
       // If using Resend (magic link), it's the verification itself
       if (account?.provider === "resend") return true
 
-      // For credentials, we check if email is verified
+      /* 
       if (account?.provider === "credentials") {
         const dbUser = (await prisma.user.findUnique({
           where: { id: user.id },
         })) as any
 
-        // If user hasn't verified email, block them
         if (!dbUser?.emailVerified) {
           throw new Error("Email belum diverifikasi. Silakan cek email Anda.")
         }
       }
+      */
 
       return true
     },

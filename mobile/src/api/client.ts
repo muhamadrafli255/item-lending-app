@@ -35,7 +35,11 @@ function getCookieString(): string {
 }
 
 async function saveCookies() {
-    await AsyncStorage.setItem(COOKIE_KEY, JSON.stringify(cookieJar));
+    try {
+        await AsyncStorage.setItem(COOKIE_KEY, JSON.stringify(cookieJar));
+    } catch (e) {
+        console.error('Failed to save cookies:', e);
+    }
 }
 
 async function loadCookies() {
@@ -74,7 +78,7 @@ api.interceptors.request.use(async (config) => {
 // Capture cookies from every response
 api.interceptors.response.use(
     (response) => {
-        const setCookie = response.headers['set-cookie'];
+        const setCookie = response.headers['set-cookie'] || response.headers['Set-Cookie'];
         if (setCookie) {
             const newCookies = parseCookies(setCookie);
             cookieJar = { ...cookieJar, ...newCookies };
@@ -84,8 +88,9 @@ api.interceptors.response.use(
     },
     (error) => {
         // Also capture cookies from error responses
-        if (error?.response?.headers?.['set-cookie']) {
-            const newCookies = parseCookies(error.response.headers['set-cookie']);
+        const setCookie = error?.response?.headers?.['set-cookie'] || error?.response?.headers?.['Set-Cookie'];
+        if (setCookie) {
+            const newCookies = parseCookies(setCookie);
             cookieJar = { ...cookieJar, ...newCookies };
             saveCookies();
         }
@@ -103,32 +108,57 @@ export async function getCsrfToken(): Promise<string> {
 export async function loginUser(email: string, password: string) {
     const csrfToken = await getCsrfToken();
 
-    const res = await api.post('/api/auth/callback/credentials',
-        new URLSearchParams({
+    // Use raw fetch for login because Axios/XHR automatically follows redirects
+    // which can lead to "Network Error" if the redirect target is localhost
+    const response = await fetch(`${BASE_URL}/api/auth/callback/credentials`, {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+            'Accept': 'application/json',
+            'X-Requested-With': 'XMLHttpRequest',
+            'ngrok-skip-browser-warning': 'true',
+            'Cookie': getCookieString(),
+        },
+        body: JSON.stringify({
             email,
             password,
             csrfToken,
             callbackUrl: BASE_URL,
-            json: 'true',
-        }).toString(),
-        {
-            headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
-            maxRedirects: 0,
-            validateStatus: (status) => status < 400 || status === 302,
-        }
-    );
+            json: true,
+            redirect: false,
+        }),
+    });
 
-    // After login, also try fetching the session to ensure cookies are valid
-    try {
-        const sessionRes = await api.get('/api/auth/session');
-        if (sessionRes.data?.user) {
-            return res;
+    const contentType = response.headers.get('content-type');
+    const text = await response.text();
+    let data: any = {};
+
+    if (contentType && contentType.includes('application/json')) {
+        try {
+            data = JSON.parse(text);
+        } catch (e) {
+            console.error('Failed to parse JSON:', e);
         }
-    } catch {
-        // Session fetch failed, but login might still have worked
     }
 
-    return res;
+    // Capture cookies from fetch response headers
+    const setCookie = response.headers.get('set-cookie');
+    if (setCookie) {
+        const newCookies = parseCookies(setCookie);
+        cookieJar = { ...cookieJar, ...newCookies };
+        await saveCookies();
+    }
+
+    if (!response.ok) {
+        if (text.trim().startsWith('<')) {
+            throw new Error('Server returned HTML instead of JSON. Check if you are redirected to an error page.');
+        }
+        throw new Error(data?.message || `Login failed (${response.status})`);
+    }
+
+    // After login, fetch profile to ensure we are logged in and get user data
+    // This call uses the updated cookieJar via Axios interceptors
+    return api.get('/api/auth/session');
 }
 
 export async function registerUser(name: string, email: string, password: string) {

@@ -27,6 +27,7 @@ export async function POST(req: Request) {
         email: body.email,
         password: hashedPassword,
         role: "USER",
+        emailVerified: new Date(),
       },
     })
 
