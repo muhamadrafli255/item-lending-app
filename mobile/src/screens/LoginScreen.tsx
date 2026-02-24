@@ -52,7 +52,7 @@ export default function LoginScreen({ navigation }: any) {
                     <View style={styles.iconContainer}>
                         <Ionicons name="cube" size={48} color={colors.primary} />
                     </View>
-                    <Text style={styles.title}>Item Lending</Text>
+                    <Text style={styles.title}>LendGo</Text>
                     <Text style={styles.subtitle}>Masuk ke akun Anda</Text>
                 </View>
 

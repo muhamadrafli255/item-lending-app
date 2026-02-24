@@ -57,7 +57,7 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
                       <div style="background: #ffffff; max-width: 500px; width: 100%; border-radius: 20px; padding: 40px; border: 1px solid #eeeeee; box-shadow: 0 10px 25px rgba(0,0,0,0.05);">
                         <h1 style="color: #000; font-size: 24px; font-weight: bold; margin-bottom: 10px; text-align: center;">Verify Your Email</h1>
                         <p style="color: #666; font-size: 16px; line-height: 24px; text-align: center; margin-bottom: 30px;">
-                          Welcome to <strong>Item Lending App</strong>! Please click the button below to secure your account and complete your registration.
+                          Welcome to <strong>LendGo</strong>! Please click the button below to secure your account and complete your registration.
                         </p>
                         <div style="text-align: center; margin-bottom: 30px;">
                           <a href="${url}" style="background: #000; color: #fff; padding: 16px 32px; border-radius: 12px; text-decoration: none; font-weight: 500; font-size: 16px; display: inline-block;">Verify Email Address</a>
@@ -71,7 +71,7 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
                         </div>
                       </div>
                       <p style="color: #ccc; font-size: 12px; text-align: center; margin-top: 20px;">
-                        &copy; ${new Date().getFullYear()} Item Lending App. All rights reserved.
+                        &copy; ${new Date().getFullYear()} LendGo. All rights reserved.
                       </p>
                     </td>
                   </tr>

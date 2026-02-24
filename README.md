@@ -1,4 +1,4 @@
-# Item Lending App 📦
+# LendGo 📦
 
 Sistem peminjaman barang terintegrasi yang terdiri dari web admin (Next.js) dan aplikasi mobile (React Native/Expo).
 
@@ -67,4 +67,4 @@ Jika Anda hanya ingin mencoba aplikasi mobile di Android tanpa setup environment
 
 ---
 
-Dibuat dengan ❤️ untuk efisiensi inventaris.
+Dibuat dengan ❤️ untuk efisiensi peminjaman barang.

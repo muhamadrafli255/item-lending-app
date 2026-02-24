@@ -1,4 +1,4 @@
-# Item Lending Mobile App 📱
+# LendGo Mobile App 📱
 
 Aplikasi mobile berbasis **React Native (Expo)** untuk meminjam barang dengan mudah. Aplikasi ini tersambung langsung ke backend Next.js Anda.
 

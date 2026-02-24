@@ -36,7 +36,7 @@ export default function CustomSplashScreen() {
                 <View style={styles.iconContainer}>
                     <Ionicons name="cube" size={80} color={colors.primary} />
                 </View>
-                <Text style={styles.title}>Item Lending</Text>
+                <Text style={styles.title}>LendGo</Text>
                 <Text style={styles.subtitle}>Pinjam barang jadi lebih mudah</Text>
             </Animated.View>
         </View>
