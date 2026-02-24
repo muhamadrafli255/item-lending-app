@@ -1,6 +1,7 @@
 import { auth } from "@/app/_lib/auth"
 import { redirect } from "next/navigation"
 import Link from "next/link"
+import Image from "next/image"
 import LogoutButton from "./_components/LogoutButton"
 
 export default async function DashboardLayout({
@@ -76,37 +77,41 @@ export default async function DashboardLayout({
                 </nav>
 
                 <div className="p-4 border-t border-slate-200 dark:border-slate-800">
-                    <div className="flex items-center gap-3 px-4 py-3 mb-4 rounded-xl bg-slate-50 dark:bg-slate-800/50">
-                        <div className="w-8 h-8 rounded-full bg-blue-100 dark:bg-blue-900/30 flex items-center justify-center text-blue-600 dark:text-blue-400 font-semibold text-xs text-uppercase">
-                            {session.user.name?.charAt(0) || 'U'}
-                        </div>
+                    <Link href="/dashboard/settings" className="flex items-center gap-3 px-4 py-3 mb-4 rounded-xl bg-slate-50 dark:bg-slate-800/50 hover:bg-slate-100 dark:hover:bg-slate-700/50 transition-colors cursor-pointer group">
+                        {session.user.image ? (
+                            <Image src={session.user.image} alt={session.user.name || ""} width={32} height={32} className="w-8 h-8 rounded-full object-cover" />
+                        ) : (
+                            <div className="w-8 h-8 rounded-full bg-blue-100 dark:bg-blue-900/30 flex items-center justify-center text-blue-600 dark:text-blue-400 font-semibold text-xs text-uppercase">
+                                {session.user.name?.charAt(0) || 'U'}
+                            </div>
+                        )}
                         <div className="flex-1 min-w-0">
                             <p className="text-sm font-semibold text-slate-900 dark:text-slate-100 truncate">{session.user.name}</p>
                             <p className="text-xs text-slate-500 dark:text-slate-400 truncate">{session.user.role}</p>
                         </div>
-                    </div>
+                    </Link>
                     <LogoutButton />
                 </div>
             </aside>
 
             {/* Main Content */}
-            <main className="flex-1 flex flex-col h-full overflow-hidden">
+            < main className="flex-1 flex flex-col h-full overflow-hidden" >
                 {/* Mobile Header */}
-                <header className="md:hidden flex items-center justify-between px-6 py-4 bg-white dark:bg-[#0f172a] border-b border-slate-200 dark:border-slate-800">
+                < header className="md:hidden flex items-center justify-between px-6 py-4 bg-white dark:bg-[#0f172a] border-b border-slate-200 dark:border-slate-800" >
                     <Link href="/dashboard" className="flex items-center gap-2 font-bold text-lg text-blue-600 dark:text-blue-400">
                         LendIt
                     </Link>
                     <div className="flex items-center gap-4">
                         <LogoutButton />
                     </div>
-                </header>
+                </header >
 
                 <div className="flex-1 overflow-y-auto p-6 md:p-10">
                     <div className="max-w-6xl mx-auto">
                         {children}
                     </div>
                 </div>
-            </main>
-        </div>
+            </main >
+        </div >
     )
 }

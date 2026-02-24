@@ -6,7 +6,7 @@ import path from "path"
 export async function POST(req: Request) {
     try {
         const session = await auth()
-        if (!session || session.user.role !== "ADMIN") {
+        if (!session?.user) {
             return NextResponse.json({ message: "Unauthorized" }, { status: 403 })
         }
 

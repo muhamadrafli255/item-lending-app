@@ -9,10 +9,12 @@ import bcrypt from "bcrypt"
 declare module "next-auth" {
   interface User {
     role?: string
+    image?: string | null
   }
   interface Session {
     user: {
       role?: string
+      image?: string | null
     } & DefaultSession["user"]
   }
 }
@@ -118,6 +120,7 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
           email: user.email,
           name: user.name,
           role: user.role,
+          image: user.image,
         }
       },
     }),
@@ -144,15 +147,29 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
 
       return true
     },
-    async jwt({ token, user, account }) {
+    async jwt({ token, user, account, trigger }) {
       if (user) {
         token.role = user.role
+        token.picture = user.image
+      }
+      // Re-read image from DB when session is updated (after profile change)
+      if (trigger === "update" || trigger === "signIn") {
+        const dbUser = await prisma.user.findUnique({
+          where: { id: token.sub! },
+          select: { image: true, name: true, role: true },
+        })
+        if (dbUser) {
+          token.picture = dbUser.image
+          token.name = dbUser.name
+          token.role = dbUser.role
+        }
       }
       return token
     },
     async session({ session, token }) {
       if (session.user) {
         session.user.role = token.role as string
+        session.user.image = token.picture as string | null
         if (token.sub) {
           session.user.id = token.sub
         }
